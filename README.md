@@ -1,4 +1,4 @@
-# Md Rakibul Hassan - Professional Profile Card
+# <h1 align="center"> Md Rakibul Hassan - Professional Profile Card </h1>
 
 ## Project Overview
 
@@ -44,8 +44,6 @@ Profile_Card/
 ├── images/
 │   ├── Md_Rakibul_Hassan.jpg
 │   ├── profile_qr.PNG
-│   ├── profile_qr.png
-│   └── profile_qr.jpg
 └── README.md
 ```
 
@@ -56,7 +54,7 @@ Profile_Card/
 1. **Download or Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/Profile_Card.git
+   git clone https://github.com/RR0327/Profile_Card.git
    ```
 
 2. **Add Your Assets**
