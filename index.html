@@ -77,6 +77,21 @@
             box-shadow: 0 5px 15px var(--shadow);
         }
 
+        .profile-img-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid white;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+            color: white;
+            font-size: 40px;
+        }
+
         .name {
             font-size: 24px;
             font-weight: 700;
@@ -156,6 +171,7 @@
             box-shadow: 0 5px 15px var(--shadow);
             cursor: pointer;
             transition: transform 0.3s ease;
+            position: relative;
         }
 
         .qr-code:hover {
@@ -540,7 +556,11 @@
     <!-- Profile Card -->
     <div class="profile-card" id="profileCard">
         <div class="card-header">
-            <img src="images/Md_Rakibul_Hassan.jpg" alt="Profile Picture" class="profile-img">
+            <!-- Profile Image with Fallback -->
+            <img src="images/Md_Rakibul_Hassan.jpg" alt="Profile Picture" class="profile-img" onerror="this.style.display='none'; document.getElementById('profilePlaceholder').style.display='flex';">
+            <div id="profilePlaceholder" class="profile-img-placeholder" style="display: none;">
+                <i class="fas fa-user"></i>
+            </div>
             <h1 class="name">Md Rakibul Hassan</h1>
             <p class="title">Backend Specialist</p>
         </div>
@@ -567,11 +587,14 @@
             <div class="qr-section">
                 <h3 class="qr-title">Scan for Full Profile</h3>
                 <div class="qr-code" id="qrCodePlaceholder">
-                    <!-- Replace this with your actual QR code image -->
-                    <img src="images/profile_qr.png" alt="Scan QR Code for Full Portfolio" style="display: none;" id="realQRCode">
-                    <div id="qrPlaceholder" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f5f5f5;color:#333;font-size:14px;text-align:center;">
-                        <i class="fas fa-qrcode" style="font-size: 50px; margin-bottom: 10px;"></i>
-                        <div>Click to Scan QR</div>
+                    <!-- QR Code with multiple fallback options -->
+                    <img src="images/profile_qr.PNG" alt="Scan QR Code for Full Portfolio" style="display: none;" id="realQRCode1" onerror="handleQRError('realQRCode1')">
+                    <img src="images/profile_qr.png" alt="Scan QR Code for Full Portfolio" style="display: none;" id="realQRCode2" onerror="handleQRError('realQRCode2')">
+                    <img src="images/profile_qr.jpg" alt="Scan QR Code for Full Portfolio" style="display: none;" id="realQRCode3" onerror="handleQRError('realQRCode3')">
+                    <div id="qrPlaceholder" style="width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;font-size:14px;text-align:center;border-radius:5px;">
+                        <i class="fas fa-qrcode" style="font-size: 60px; margin-bottom: 10px;"></i>
+                        <div style="font-weight:bold;">Scan Me</div>
+                        <div style="font-size:10px;margin-top:5px;">portfolio-rouge-eight-22.vercel.app</div>
                     </div>
                 </div>
                 <p class="qr-note">Scan to visit my complete portfolio website</p>
@@ -591,6 +614,64 @@
             } else {
                 themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
+        });
+
+        // QR Code Error Handling
+        function handleQRError(imageId) {
+            console.log('QR image failed to load:', imageId);
+            document.getElementById(imageId).style.display = 'none';
+            
+            // Check if any QR image loaded successfully
+            setTimeout(checkQRImages, 100);
+        }
+
+        function checkQRImages() {
+            const qrImg1 = document.getElementById('realQRCode1');
+            const qrImg2 = document.getElementById('realQRCode2');
+            const qrImg3 = document.getElementById('realQRCode3');
+            const placeholder = document.getElementById('qrPlaceholder');
+            
+            const img1Loaded = qrImg1.complete && qrImg1.naturalHeight > 0;
+            const img2Loaded = qrImg2.complete && qrImg2.naturalHeight > 0;
+            const img3Loaded = qrImg3.complete && qrImg3.naturalHeight > 0;
+            
+            if (img1Loaded) {
+                console.log('QR Image 1 loaded successfully');
+                qrImg1.style.display = 'block';
+                qrImg2.style.display = 'none';
+                qrImg3.style.display = 'none';
+                placeholder.style.display = 'none';
+            } else if (img2Loaded) {
+                console.log('QR Image 2 loaded successfully');
+                qrImg2.style.display = 'block';
+                qrImg1.style.display = 'none';
+                qrImg3.style.display = 'none';
+                placeholder.style.display = 'none';
+            } else if (img3Loaded) {
+                console.log('QR Image 3 loaded successfully');
+                qrImg3.style.display = 'block';
+                qrImg1.style.display = 'none';
+                qrImg2.style.display = 'none';
+                placeholder.style.display = 'none';
+            } else {
+                console.log('All QR images failed to load, showing placeholder');
+                placeholder.style.display = 'flex';
+            }
+        }
+
+        // Auto-check QR images on page load
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking QR images...');
+            
+            // Check profile image
+            const profileImg = document.querySelector('.profile-img');
+            if (!profileImg.complete || profileImg.naturalHeight === 0) {
+                profileImg.style.display = 'none';
+                document.getElementById('profilePlaceholder').style.display = 'flex';
+            }
+            
+            // Check QR images after a delay to ensure they're loaded
+            setTimeout(checkQRImages, 500);
         });
 
         // Contact Form Functionality
@@ -667,22 +748,16 @@
         const qrScanner = document.getElementById('qrScanner');
         const closeScanner = document.getElementById('closeScanner');
         const scannerSuccess = document.getElementById('scannerSuccess');
-        const realQRCode = document.getElementById('realQRCode');
-        const qrPlaceholder = document.getElementById('qrPlaceholder');
 
-        // Check if real QR code image exists
-        if (realQRCode.complete && realQRCode.naturalHeight !== 0) {
-            // Real QR code image is available
-            realQRCode.style.display = 'block';
-            qrPlaceholder.style.display = 'none';
+        qrCodePlaceholder.addEventListener('click', function() {
+            // Check if we have a real QR code image
+            const hasRealQR = document.querySelector('.qr-code img[style*="display: block"]');
             
-            // Clicking real QR code opens portfolio directly
-            qrCodePlaceholder.addEventListener('click', function() {
+            if (hasRealQR) {
+                // If real QR exists, open portfolio directly
                 window.open('https://portfolio-rouge-eight-22.vercel.app/', '_blank');
-            });
-        } else {
-            // No real QR code image, show scanner simulation
-            qrCodePlaceholder.addEventListener('click', function() {
+            } else {
+                // Otherwise show scanner simulation
                 qrScanner.style.display = 'flex';
                 scannerSuccess.style.display = 'none';
                 
@@ -696,8 +771,8 @@
                         window.open('https://portfolio-rouge-eight-22.vercel.app/', '_blank');
                     }, 2000);
                 }, 2000);
-            });
-        }
+            }
+        });
 
         closeScanner.addEventListener('click', function() {
             qrScanner.style.display = 'none';
